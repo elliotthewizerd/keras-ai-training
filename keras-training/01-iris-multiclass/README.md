@@ -13,7 +13,7 @@ Chương trình `train_iris.py` thực hiện đầy đủ quy trình:
 3. Chuẩn hóa bằng `StandardScaler`, chỉ `fit` trên train.
 4. Huấn luyện mạng `4 → Dense(16, ReLU) → Dense(8, ReLU) → Dense(3, Softmax)` trong 100 epoch.
 5. Đánh giá loss, accuracy trên test và dự đoán một mẫu test.
-6. Vẽ learning curves của train/validation loss và accuracy, lưu tại `iris_learning_curves.png`.
+6. Dùng `pandas.DataFrame(history.history)` theo phong cách khóa Kaggle để vẽ learning curves của train/validation loss và accuracy, lưu tại `iris_learning_loss.png` và `iris_learning_accuracy.png`.
 
 ## Cài đặt và chạy
 

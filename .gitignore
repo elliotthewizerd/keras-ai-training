@@ -6,7 +6,7 @@ __pycache__/
 # Training outputs
 *.h5
 *.keras
-iris_learning_curves.png
+iris_learning_*.png
 
 # Large local datasets and notebooks outside the lesson materials
 *.csv

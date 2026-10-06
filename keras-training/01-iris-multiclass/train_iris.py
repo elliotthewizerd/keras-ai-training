@@ -1,17 +1,15 @@
 """Huấn luyện mạng Keras phân loại 3 loài hoa Iris."""
 
 import numpy as np
-import tensorflow as tf
 import matplotlib.pyplot as plt
+import pandas as pd
+from tensorflow import keras
+from tensorflow.keras import layers
 from sklearn.datasets import load_iris
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from tensorflow.keras import Sequential
-from tensorflow.keras.layers import Dense, Input
-
-
 np.random.seed(42)
-tf.keras.utils.set_random_seed(42)
+keras.utils.set_random_seed(42)
 
 # 1. Đọc dữ liệu Iris
 iris = load_iris()
@@ -32,13 +30,14 @@ scaler = StandardScaler()
 X_train_scaled = scaler.fit_transform(X_train)
 X_test_scaled = scaler.transform(X_test)
 
-# 4. Mạng phân loại đa lớp: 4 -> 16 -> 8 -> 3.
-model = Sequential([
-    Input(shape=(4,)),
-    Dense(16, activation="relu"),
-    Dense(8, activation="relu"),
-    Dense(3, activation="softmax"),
+# 4. Phong cách Kaggle: Sequential là một danh sách các Dense layers.
+# Mỗi hàng có 4 đặc trưng, nên input_shape là [4].
+model = keras.Sequential([
+    layers.Dense(units=16, activation="relu", input_shape=[4]),
+    layers.Dense(units=8, activation="relu"),
+    layers.Dense(units=3, activation="softmax"),
 ])
+model.summary()
 
 # 5. Nhãn là số nguyên 0, 1, 2 nên dùng sparse categorical loss.
 model.compile(
@@ -53,22 +52,23 @@ history = model.fit(
     validation_split=0.2, verbose=1,
 )
 
-# Learning curves của train và validation.
-epochs = range(1, len(history.history["loss"]) + 1)
-fig, axes = plt.subplots(1, 2, figsize=(12, 4))
-axes[0].plot(epochs, history.history["loss"], label="Train loss")
-axes[0].plot(epochs, history.history["val_loss"], label="Validation loss")
-axes[0].set(title="Learning curve: Loss", xlabel="Epoch", ylabel="Loss")
-axes[0].legend()
-axes[0].grid(alpha=0.3)
-axes[1].plot(epochs, history.history["accuracy"], label="Train accuracy")
-axes[1].plot(epochs, history.history["val_accuracy"], label="Validation accuracy")
-axes[1].set(title="Learning curve: Accuracy", xlabel="Epoch", ylabel="Accuracy")
-axes[1].legend()
-axes[1].grid(alpha=0.3)
-fig.tight_layout()
-fig.savefig("iris_learning_curves.png", dpi=150)
+# Phong cách Kaggle: chuyển history sang DataFrame rồi plot các cột cần xem.
+history_df = pd.DataFrame(history.history)
+history_df.loc[:, ["loss", "val_loss"]].plot(
+    title="Learning curve: Loss", xlabel="Epoch", ylabel="Loss", grid=True
+)
+plt.tight_layout()
+plt.savefig("iris_learning_loss.png", dpi=150)
 plt.show()
+
+history_df.loc[:, ["accuracy", "val_accuracy"]].plot(
+    title="Learning curve: Accuracy", xlabel="Epoch", ylabel="Accuracy", grid=True
+)
+plt.tight_layout()
+plt.savefig("iris_learning_accuracy.png", dpi=150)
+plt.show()
+
+print("Minimum validation loss:", history_df["val_loss"].min())
 
 # 7. Đánh giá cuối cùng trên tập test.
 test_loss, test_accuracy = model.evaluate(X_test_scaled, y_test, verbose=0)
