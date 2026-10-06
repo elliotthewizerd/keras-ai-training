@@ -1,0 +1,13 @@
+# Python environments and generated files
+.venv/
+__pycache__/
+*.py[cod]
+
+# Training outputs
+*.h5
+*.keras
+iris_learning_curves.png
+
+# Large local datasets and notebooks outside the lesson materials
+*.csv
+*.ipynb
